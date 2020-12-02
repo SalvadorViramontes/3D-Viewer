@@ -1,9 +1,9 @@
 import { NullableString, NullableNumber } from './nullables'
 
 export interface RootState {
-    currentRoute: NullableString
+    currentRoute: NullableString;
 }
 
 export interface ModuleState {
-    property: null
+    property: null;
 }

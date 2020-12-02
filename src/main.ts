@@ -3,7 +3,10 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 
-import './style.scss'
+import { BootstrapVue } from 'bootstrap-vue'
+Vue.use(BootstrapVue)
+
+import './styleImports.scss'
 import '@fortawesome/fontawesome-free/css/all.css';
 
 Vue.config.productionTip = false

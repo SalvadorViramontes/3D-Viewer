@@ -1,6 +1,6 @@
 <template>
     <div id="header">
-        <nav class="navbar navbar-light bg-dark navbar-expand">
+        <nav class="navbar navbar-light bg-dark navbar-expand shadow">
             <div class="navbar-brand">
                 <a @click.prevent="goHome()" href="/">
                     <img src="../assets/logo.png">
@@ -19,6 +19,7 @@
 <style lang="scss">
     .navbar{
         height: 3rem;
+        z-index: 10;
 
         .navbar-brand {
             height: 99%;

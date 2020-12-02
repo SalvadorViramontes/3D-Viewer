@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <SidePanel/>
-    <h1> Proyecto 01 </h1>
+    <Canvas/>
   </div>
 </template>
 
@@ -14,10 +14,12 @@
 
   import Component from 'vue-class-component'
   import SidePanel from '../components/SidePanel.vue'
+  import Canvas from '../components/Canvas.vue'
 
   @Component({
     components: {
-      SidePanel
+      SidePanel,
+      Canvas
     }
   })
   export default class Home extends Vue {
