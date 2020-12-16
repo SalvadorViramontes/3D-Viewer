@@ -26,7 +26,7 @@
                                     </template>
                                     <b-card-text>
                                         <h5 class="mt-0">Traslación</h5>
-                                        <Form3D formType="'Traslation'"/>
+                                        <Form3D formType="Traslation"/>
                                     </b-card-text>
                                 </b-tab>
                                 <b-tab>
@@ -35,7 +35,7 @@
                                     </template>
                                     <b-card-text>
                                         <h5 class="mt-0">Rotación</h5>
-                                        <Form3D formType="'Rotation'"/>
+                                        <Form3D formType="Rotation"/>
                                     </b-card-text>
                                 </b-tab>
                                 <b-tab>
@@ -44,7 +44,7 @@
                                     </template>
                                     <b-card-text>
                                         <h5 class="mt-0">Escala</h5>
-                                        <Form3D formType="'Scale'"/>
+                                        <Form3D formType="Scale"/>
                                     </b-card-text>
                                 </b-tab>
                             </b-tabs>

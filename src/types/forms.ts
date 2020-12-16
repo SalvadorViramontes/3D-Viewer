@@ -1,1 +1,0 @@
-export type TypeForm = "Traslation" | "Rotation" | "Scale";

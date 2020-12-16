@@ -14,35 +14,51 @@
 
 <script lang="ts">
     import * as THREE from 'three';
-    import { GLTF, GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
     import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
     import { Vue, Component } from "vue-property-decorator";
-    //import dice from "../public/dice.gltf";
+    import { RendererSize } from '@/types/misc';
+    import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
     @Component
     export default class Canvas extends Vue {
         private container: Element | null = null;
-        private scene: THREE.Scene;
         private controls: OrbitControls | null = null;
-        private camera: THREE.PerspectiveCamera | null = null;
-        private renderer: THREE.WebGLRenderer;
-        private loader: GLTFLoader;
-        private objects: Array<THREE.Object3D>;
+
+        //#region Getters
+        get currentObjectId(){
+            return this.$store.getters["ObjectsModule/getSelectedObjectId"];
+        }
+        
+        get camera(){
+            return this.$store.getters["CameraModule/getCameraInstance"];
+        }
+
+        get renderer(){
+            return this.$store.getters["RendererModule/getRendererInstance"];
+        }
+
+        get scene(){
+            return this.$store.getters["SceneModule/getSceneInstance"];
+        }
+
+        get loader(){
+            return this.$store.getters["LoaderModule/getLoaderInstance"];
+        }
+        //#endregion
 
         constructor(){
             super();
-            this.scene = new THREE.Scene();
-            this.objects = [];
+            this.$store.commit("SceneModule/setScene", new THREE.Scene());
 
             const ambientLight = new THREE.AmbientLight(0xffffff,1);
-            this.scene.add(ambientLight);
+            this.$store.commit("SceneModule/addObjectToScene", ambientLight);
 
-            this.renderer = new THREE.WebGLRenderer({
+            this.$store.commit("RendererModule/setRenderer", new THREE.WebGLRenderer({
                 antialias: true,
                 alpha: true
-            });
+            }));
             
-            this.loader = new GLTFLoader();
+            this.$store.commit("LoaderModule/setLoader", new GLTFLoader());
         }
 
         mounted(){
@@ -50,31 +66,37 @@
             const canvasWidth = window.innerWidth;
             const canvasHeight = window.innerHeight - 3*(parseFloat(getComputedStyle(document.documentElement).fontSize));
 
-            const fieldOfView = 50;
-            const aspect = canvasWidth / canvasHeight;
-            const nearLimit = 0.01;
-            const farLimit = 1000;
+            const cameraOptions = [
+                50, //fieldOfView
+                canvasWidth / canvasHeight, //aspect
+                0.01, //nearLimit
+                1000, //farLimit
+            ]
 
-            this.camera = new THREE.PerspectiveCamera(fieldOfView, aspect, nearLimit, farLimit);
-            this.camera.position.set(0, 0, 10);
+            this.$store.commit("CameraModule/setCamera", new THREE.PerspectiveCamera(...cameraOptions));
+            this.$store.commit("CameraModule/setCameraPosition", [0, 0, 10]);
 
-            this.renderer.setSize(canvasWidth, canvasHeight);
-            this.renderer.setPixelRatio(window.devicePixelRatio);
+            const rendererSize: RendererSize = {
+                Width: canvasWidth,
+                Height: canvasHeight
+            }
+            this.$store.commit("RendererModule/setSize", rendererSize);
+            this.$store.commit("RendererModule/setPixelRatio", window.devicePixelRatio);
             this.container.appendChild(this.renderer.domElement);
 
             const urlModel = process.env.VUE_APP_MODEL_ROUTE;
-            this.loader.load(urlModel, (gltf: GLTF) =>{
-                this.scene.add(gltf.scene);
-                this.objects.push(gltf.scene.children[0]);
-                this.renderer.render(this.scene, this.camera as THREE.PerspectiveCamera);
-            })
+            this.$store.dispatch("LoaderModule/loadModelFromUrl", urlModel);
 
             window.addEventListener('resize', ()=>{
                 const canvasWidth = window.innerWidth;
                 const canvasHeight = window.innerHeight - 3*(parseFloat(getComputedStyle(document.documentElement).fontSize));
-                this.camera!.aspect = canvasWidth / canvasHeight;
-                this.camera!.updateProjectionMatrix();
-                this.renderer.setSize(canvasWidth, canvasHeight);
+                this.$store.commit("CameraModule/updateCameraAspectRatio", canvasWidth / canvasHeight);
+                this.$store.commit("CameraModule/updateProjectionMatrix");
+                const rendererSize: RendererSize = {
+                    Width: canvasWidth,
+                    Height: canvasHeight
+                };
+                this.$store.commit("RendererModule/setSize", rendererSize);
             });
 
             this.controls = new OrbitControls( this.camera, this.renderer.domElement );
@@ -89,7 +111,7 @@
             // }
 
             this.controls.addEventListener( 'change', () => {
-                this.renderer.render(this.scene, this.camera as THREE.PerspectiveCamera);
+                this.$store.dispatch("RendererModule/render");
             });
         }
     }
